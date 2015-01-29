@@ -78,7 +78,12 @@ define(function (require, exports, module) {
             curFile = curDoc.file,
             fileFullPath = curFile.fullPath,
             locAccFilePath = fileFullPath.substr(0, fileFullPath.indexOf('js/')) + 'lang/en/data/loc-acc.json';
-                
+            
+        
+        if(fileFullPath.indexOf('/js/') === -1){
+            return;
+        }
+        
         locAccFilePath = locAccFilePath.replace('\\','/');   
         readFile(locAccFilePath);
     }
