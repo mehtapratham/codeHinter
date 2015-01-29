@@ -1,41 +1,48 @@
-function LocHints(func, func2, func3){
+function LocHints(func, func2){
     this.getScreenHints = func;
     this.getElementIdHints = func2;
-    this.checkWhichHintsToLoad = func3;
 }
 
 LocHints.prototype.hasHints = function (editor, implicitChar) {
-    console.log('hashints');
-    this.screenhints  =this.getScreenHints();
-    this.elementHints = this.getElementIdHints();
     this.editor = editor;
     this.pos = editor.getCursorPos();
     
-    var hintsToLoad = this.checkWhichHintsToLoad();
+    var currentLine = editor.document.getLine(this.pos.line);
     
-    this.hintsToLoad = hintsToLoad;
-    
-    if(hintsToLoad !== null && typeof hintsToLoad !== 'undefined'){
-        return true;
+    var LOAD_SCREEN_REG_EXP = /\bloadScreen\b(\(')|\bloadScreen\b(\(")/;
+
+    var GET_MESSAGE_REG_EXP = /\bgetMessage\b(\(')|\bgetMessage\b(\(")|\bgetAccMessage\b(\(')|\bgetAccMessage\b(\(")|\bsetMessage\b(\(')|\bsetMessage\b(\(")|\bsetAccMessage\b(\(')|\bsetAccMessage\b(\(")/;
+   
+    if(implicitChar === "'" || implicitChar === '"'){
+        if(currentLine.match(LOAD_SCREEN_REG_EXP)){
+            this.hintsToLoad = 'screenHints';
+            return true;
+        }
+
+        if(currentLine.match(GET_MESSAGE_REG_EXP)){
+            this.hintsToLoad = 'elementHints';
+            return true;
+        }
     }
+    
     return false;
 };
 
 LocHints.prototype.getHints = function (implicitChar) {
-    console.log('getHints');
     var hints;
     
     this.match = this.editor.document.getRange(this.pos,this.editor.getCursorPos());
     
     switch(this.hintsToLoad){
         case 'screenHints':
-            hints = this.screenhints;
+            hints = this.getScreenHints();
             break;
         case 'elementHints':
-            hints = this.elementHints;
+            hints = this.getElementIdHints();
             break;
     }
     
+    hints = this.removeWrongHints(hints);
     
     return {
         hints: hints,
@@ -45,6 +52,21 @@ LocHints.prototype.getHints = function (implicitChar) {
     };
 };
 
+LocHints.prototype.removeWrongHints = function(hints) {
+	var result = [];
+	for(var i = 0; i < hints.length; i++) {
+		if (hints[i].indexOf(this.match) >= 0) {
+			result.push(hints[i]);
+		}
+	}
+	return result;
+}
+
 LocHints.prototype.insertHint = function (hint) {
-    console.log('insertHitns');
+    var curDoc = this.editor.document,
+        curPos = this.editor.getCursorPos();
+    
+    var start = {line: curPos.line, ch: curPos.ch};
+    
+    curDoc.replaceRange(hint,start);
 };

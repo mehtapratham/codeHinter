@@ -28,13 +28,10 @@ define(function (require, exports, module) {
         fileType            = '',
         screenHints         = [],
         screens             = [],
-        elementHints        = [];
+        elementHints        = [],
+        locHints;
 
     var self = this;
-
-    var LOAD_SCREEN_REG_EXP = /\bloadScreen\b(\(')|\bloadScreen\b(\(")/;
-
-    var GET_MESSAGE_REG_EXP = /\bgetMessage\b(\(')|\bgetMessage\b(\(")|\bgetAccMessage\b(\(')|\bgetAccMessage\b(\(")|\bsetMessage\b(\(')|\bsetMessage\b(\(")|\bsetAccMessage\b(\(')|\bsetAccMessage\b(\(")/;
 
     AppInit.appReady(function () {
         require('locHints');
@@ -48,7 +45,7 @@ define(function (require, exports, module) {
         if (editorHolder) {
             editorHolder.addEventListener("keyup", handleKey, true);
         }
-        var locHints = new LocHints(getScreenHints, getElementIdHints, checkWhichHintsToLoad);
+        locHints = new LocHints(getScreenHints, getElementIdHints, checkWhichHintsToLoad);
         CodeHintManager.registerHintProvider(locHints, ["javascript"], 0);
     });
     
@@ -81,8 +78,6 @@ define(function (require, exports, module) {
             curFile = curDoc.file,
             fileFullPath = curFile.fullPath,
             locAccFilePath = fileFullPath.substr(0, fileFullPath.indexOf('js/')) + 'lang/en/data/loc-acc.json';
-        
-        fileType = FileUtils.getFileExtension(fileFullPath);
                 
         locAccFilePath = locAccFilePath.replace('\\','/');   
         readFile(locAccFilePath);
@@ -107,6 +102,7 @@ define(function (require, exports, module) {
     }
     
     function checkWhichHintsToLoad(){
+        
         if(self.loadScreenHints === true){
             self.loadScreenHints = false;
             return 'screenHints';
@@ -114,26 +110,7 @@ define(function (require, exports, module) {
         
         if(self.loadElementHints === true){
             self.loadElementHints = false;
-            return 'elementHints'
-        }
-    }
-
-    function handleKey(event){
-        var editor  = EditorManager.getCurrentFullEditor();
-        if(fileType === 'js'){
-            if ((event.type === 'keydown' /*&& event.keyCode === KeyEvent.DOM_VK_TAB*/) ||
-                (event.type === 'keyup' /*&& event.keyCode === KeyEvent.DOM_VK_RETURN*/)) {
-                var currentLineNum = editor.getCursorPos().line;
-
-                var currentLine = editor.document.getLine(currentLineNum);
-                if(currentLine.match(LOAD_SCREEN_REG_EXP)){
-                    self.loadScreenHints = true;
-                }
-
-                if(currentLine.match(GET_MESSAGE_REG_EXP)){
-                    self.loadElementHints === true;
-                }
-            }
+            return 'elementHints';
         }
     }
 });
