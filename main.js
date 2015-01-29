@@ -24,8 +24,13 @@ define(function (require, exports, module) {
         MainViewManager		= brackets.getModule("view/MainViewManager"),
         FileSystem          = brackets.getModule("filesystem/FileSystem"),
         FileUtils           = brackets.getModule("file/FileUtils"),
-        locObject           = {};
+        locObject           = {},
+        fileType            = '',
+        screenHints         = [],
+        screens             = [],
+        elementHints        = [];
 
+    var self = this;
 
     var LOAD_SCREEN_REG_EXP = /\bloadScreen\b(\(')|\bloadScreen\b(\(")/;
 
@@ -35,20 +40,52 @@ define(function (require, exports, module) {
         require('locHints');
 
         var editorHolder = $("#editor-holder")[0];
+        
+        EditorManager.on('activeEditorChange', function (){
+            reloadLocScreensAndElements();
+        });
+        
         if (editorHolder) {
             editorHolder.addEventListener("keyup", handleKey, true);
         }
-
-        var locHints = new LocHints();
+        var locHints = new LocHints(getScreenHints, getElementIdHints, checkWhichHintsToLoad);
         CodeHintManager.registerHintProvider(locHints, ["javascript"], 0);
     });
-
+    
     function getScreenHints(){
-        console.log('screen hints');
+        screenHints = [];
+        screens = [];
+        $.each(locObject.locAccData, function(index, screen){
+            screenHints.push(screen.id);
+            screens.push(screen);
+        });
+        
+        return screenHints;
     }
-
+    
     function getElementIdHints(){
-        console.log('element hints');
+        elementHints = [];
+        
+        $.each(screens, function(index, screenObj){
+            $.each(screenObj.elements, function (index, element){
+                elementHints.push(element.id);
+            });
+        });
+        return elementHints;
+    }
+    
+    function reloadLocScreensAndElements(){
+        
+        var editor  = EditorManager.getCurrentFullEditor(),
+            curDoc = DocumentManager.getCurrentDocument(),
+            curFile = curDoc.file,
+            fileFullPath = curFile.fullPath,
+            locAccFilePath = fileFullPath.substr(0, fileFullPath.indexOf('js/')) + 'lang/en/data/loc-acc.json';
+        
+        fileType = FileUtils.getFileExtension(fileFullPath);
+                
+        locAccFilePath = locAccFilePath.replace('\\','/');   
+        readFile(locAccFilePath);
     }
 
     function readFile(filePath) {
@@ -56,7 +93,6 @@ define(function (require, exports, module) {
         FileUtils.readAsText(file).done(function (text) {
             try {
                 locObject = JSON.parse(text);
-                console.log('file reading is done : ' , text);
             } catch (e) {
                 // continue with null configObj which will result in
                 // default settings.
@@ -69,16 +105,21 @@ define(function (require, exports, module) {
             console.log('file reading failed' + error);            
         }); 
     }
+    
+    function checkWhichHintsToLoad(){
+        if(self.loadScreenHints === true){
+            self.loadScreenHints = false;
+            return 'screenHints';
+        }
+        
+        if(self.loadElementHints === true){
+            self.loadElementHints = false;
+            return 'elementHints'
+        }
+    }
 
     function handleKey(event){
-
-        var editor  = EditorManager.getCurrentFullEditor(),
-            curDoc = DocumentManager.getCurrentDocument(),
-            curFile = curDoc.file,
-            fileFullPath = curFile.fullPath,
-            fileType = FileUtils.getFileExtension(fileFullPath),
-            locAccFilePath = fileFullPath.substr(0, fileFullPath.indexOf('js/')) + 'lang/en/data/loc-acc.json';
-
+        var editor  = EditorManager.getCurrentFullEditor();
         if(fileType === 'js'){
             if ((event.type === 'keydown' /*&& event.keyCode === KeyEvent.DOM_VK_TAB*/) ||
                 (event.type === 'keyup' /*&& event.keyCode === KeyEvent.DOM_VK_RETURN*/)) {
@@ -86,14 +127,12 @@ define(function (require, exports, module) {
 
                 var currentLine = editor.document.getLine(currentLineNum);
                 if(currentLine.match(LOAD_SCREEN_REG_EXP)){
-                    getScreenHints();
+                    self.loadScreenHints = true;
                 }
 
                 if(currentLine.match(GET_MESSAGE_REG_EXP)){
-                    getElementIdHints();
-                }                
-                locAccFilePath = locAccFilePath.replace('\\','/');   
-                readFile(locAccFilePath);
+                    self.loadElementHints === true;
+                }
             }
         }
     }
