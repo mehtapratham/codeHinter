@@ -67,6 +67,6 @@ LocHints.prototype.insertHint = function (hint) {
         curPos = this.editor.getCursorPos();
     
     var start = {line: curPos.line, ch: curPos.ch};
-    
+    hint = hint.substr(this.match.length , hint.length);
     curDoc.replaceRange(hint,start);
 };

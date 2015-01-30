@@ -42,9 +42,9 @@ define(function (require, exports, module) {
             reloadLocScreensAndElements();
         });
         
-        if (editorHolder) {
-            editorHolder.addEventListener("keyup", handleKey, true);
-        }
+//        if (editorHolder) {
+//            editorHolder.addEventListener("keyup", handleKey, true);
+//        }
         locHints = new LocHints(getScreenHints, getElementIdHints, checkWhichHintsToLoad);
         CodeHintManager.registerHintProvider(locHints, ["javascript"], 0);
     });
