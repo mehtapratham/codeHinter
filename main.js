@@ -41,10 +41,14 @@ define(function (require, exports, module) {
         EditorManager.on('activeEditorChange', function (){
             reloadLocScreensAndElements();
         });
+        /*------future use do not uncomment or remove------*/
+//        FileSystem.on('change', function(object,file){
+//            if (file._name === 'loc-acc.json'){
+//                console.info('change');
+//                reloadLocScreensAndElements();
+//            }
+//        });
         
-//        if (editorHolder) {
-//            editorHolder.addEventListener("keyup", handleKey, true);
-//        }
         locHints = new LocHints(getScreenHints, getElementIdHints, checkWhichHintsToLoad);
         CodeHintManager.registerHintProvider(locHints, ["javascript"], 0);
     });
@@ -72,7 +76,6 @@ define(function (require, exports, module) {
     }
     
     function reloadLocScreensAndElements(){
-        
         var editor  = EditorManager.getCurrentFullEditor(),
             curDoc = DocumentManager.getCurrentDocument(),
             curFile = curDoc.file,
@@ -90,6 +93,9 @@ define(function (require, exports, module) {
 
     function readFile(filePath) {
         var file = FileSystem.getFileForPath(filePath);
+        
+        locObject = {};
+        
         FileUtils.readAsText(file).done(function (text) {
             try {
                 locObject = JSON.parse(text);
