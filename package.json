@@ -1,7 +1,7 @@
 {
-    "name": "zeusCodeHinter",
+    "name": "zeus-code-hinter",
     "title": "zeusCodeHinter",
-    "description": "Generates JSDoc,PHPDoc annotations for your functions.",
+    "description": "Useful for only Zeus Systems Pvt Ltd. Reads loc acc file of the interactivity folder.",
     "homepage": "",
     "version": "0.7.0",
     "author": "",
