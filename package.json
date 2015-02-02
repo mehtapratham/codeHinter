@@ -3,7 +3,7 @@
     "title": "zeusCodeHinter",
     "description": "Useful for only Zeus Systems Pvt Ltd. Reads loc acc file of the interactivity folder.",
     "homepage": "",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "author": "",
     "license": "MIT",
     "engines": {
