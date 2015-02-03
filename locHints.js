@@ -13,8 +13,8 @@ LocHints.prototype.hasHints = function (editor, implicitChar) {
     var LOAD_SCREEN_REG_EXP = /\bloadScreen\b(\(')|\bloadScreen\b(\(")|\bunloadScreen\b(\(')|\bunloadScreen\b(\(")/;
 
     var GET_SET_CHANGE_MESSAGE_REG_EXP = /\bgetMessage\b(\(')|\bgetMessage\b(\(")|\bgetAccMessage\b(\(')|\bgetAccMessage\b(\(")|\bsetMessage\b(\(')|\bsetMessage\b(\(")|\bsetAccMessage\b(\(')|\bsetAccMessage\b(\(")|\bchangeMessage\b(\(')|\bchangeMessage\b(\(")|\bchangeAccMessage\b(\(')|\bchangeAccMessage\b(\(")/;
-    
-    var OTHER_ACCESSIBILITY_FUNCTIONS_REG_EXP = /\bgetTabIndex\b(\(')|\bgetTabIndex\b(\(")|\bsetTabIndex\b(\(')|\bsetTabIndex\b(\(")|\bsetFocus\b(\(')|\bsetFocus\b(\(")|\bfocusIn\b(\(')|\bfocusIn\b(\(")|\bfocusOut\b(\(')|\bfocusOut\b(\(")|\bupdateFocusRect\b(\(')|\bupdateFocusRect\b(\(")/;
+
+    var OTHER_ACCESSIBILITY_FUNCTIONS_REG_EXP = /\bgetTabIndex\b(\(')|\bgetTabIndex\b(\(")|\bsetTabIndex\b(\(')|\bsetTabIndex\b(\(")|\bsetFocus\b(\(')|\bsetFocus\b(\(")|\bfocusIn\b(\(')|\bfocusIn\b(\(")|\bfocusOut\b(\(')|\bfocusOut\b(\(")|\bupdateFocusRect\b(\(')|\bupdateFocusRect\b(\(")|\benableTab\b(\(')|\benableTab\b(\(")/;
 
     if(implicitChar === "'" || implicitChar === '"'){
         if(currentLine.match(LOAD_SCREEN_REG_EXP)){
